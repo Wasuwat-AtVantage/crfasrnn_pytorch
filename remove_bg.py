@@ -22,30 +22,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import torch
-
+import os
+from os import listdir
+from os.path import isfile, join
+from PIL import Image, ImageDraw, ImageFilter
 from crfasrnn import util
 from crfasrnn.crfasrnn_model import CrfRnnNet
+# Download the model from https://tinyurl.com/crfasrnn-weights-pth
+model = CrfRnnNet()
+model.eval()
+saved_weights_path = "crfasrnn_weights.pth"
+model.load_state_dict(torch.load(saved_weights_path))
+INPUT_PATH = 'pics/'
+OUTPUT_PATH = 'res/'
 
 
-def main():
-    input_file = "image.jpg"
-    output_file = "labels.png"
-
+def process_image(input_file):
     # Read the image
     img_data, img_h, img_w, size = util.get_preprocessed_image(input_file)
-
-    # Download the model from https://tinyurl.com/crfasrnn-weights-pth
-    saved_weights_path = "crfasrnn_weights.pth"
-
-    model = CrfRnnNet()
-    model.load_state_dict(torch.load(saved_weights_path))
-    model.eval()
+    original = Image.open(input_file)
     out = model.forward(torch.from_numpy(img_data))
-
     probs = out.detach().numpy()[0]
     label_im = util.get_label_image(probs, img_h, img_w, size)
-    label_im.save(output_file)
+    blank = Image.new('RGB', original.size)
+    mask = label_im.convert('1').resize(original.size)
+    res = Image.composite(original, blank, mask)
+    # label_im.save(output_file)
+    return res
 
 
-if __name__ == "__main__":
-    main()
+files = [f for f in listdir(INPUT_PATH) if isfile(join(INPUT_PATH, f))]
+for file_name in files:
+    input_file = os.path.join(INPUT_PATH, file_name)
+    res = process_image(input_file)
+    res.save(os.path.join(OUTPUT_PATH, file_name))
