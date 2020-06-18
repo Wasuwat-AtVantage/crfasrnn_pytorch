@@ -57,11 +57,11 @@ files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.w
 # files = [f for f in listdir(INPUT_PATH) if isfile(join(INPUT_PATH, f))]
 for file_name in files:
     input_file = file_name
+    print('Processing file:' + str(input_file))
     res = process_image(input_file)
     outpath = os.path.join(OUTPUT_PATH, file_name)
     dirname = os.path.dirname(outpath)
-    print(dirname)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    res.save(output)
+    res.save(outpath)
 
