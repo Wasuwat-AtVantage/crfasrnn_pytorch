@@ -23,6 +23,7 @@ SOFTWARE.
 """
 import torch
 import os
+import sys
 from os import listdir
 from os.path import isfile, join
 from PIL import Image, ImageDraw, ImageFilter
@@ -55,6 +56,12 @@ def process_image(input_file):
 files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk(INPUT_PATH)] for val in sublist]
 # files = [f for f in listdir(INPUT_PATH) if isfile(join(INPUT_PATH, f))]
 for file_name in files:
-    input_file = os.path.join(INPUT_PATH, file_name)
+    input_file = file_name
     res = process_image(input_file)
-    res.save(os.path.join(OUTPUT_PATH, file_name))
+    outpath = os.path.join(OUTPUT_PATH, file_name)
+    dirname = os.path.dirname(outpath)
+    print(dirname)
+    if not os.path.exists(dirname):
+    	os.makedirs(dirname)
+    res.save(output)
+
