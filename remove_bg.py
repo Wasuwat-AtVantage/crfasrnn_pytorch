@@ -62,6 +62,6 @@ for file_name in files:
     dirname = os.path.dirname(outpath)
     print(dirname)
     if not os.path.exists(dirname):
-    	os.makedirs(dirname)
+        os.makedirs(dirname)
     res.save(output)
 
