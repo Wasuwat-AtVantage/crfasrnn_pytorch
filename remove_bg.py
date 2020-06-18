@@ -35,6 +35,7 @@ saved_weights_path = "crfasrnn_weights.pth"
 model.load_state_dict(torch.load(saved_weights_path))
 INPUT_PATH = 'pics/'
 OUTPUT_PATH = 'res/'
+os.chdir(sys.path[0])
 
 
 def process_image(input_file):
@@ -51,7 +52,8 @@ def process_image(input_file):
     return res
 
 
-files = [f for f in listdir(INPUT_PATH) if isfile(join(INPUT_PATH, f))]
+files = [val for sublist in [[os.path.join(i[0], j) for j in i[2]] for i in os.walk(INPUT_PATH)] for val in sublist]
+# files = [f for f in listdir(INPUT_PATH) if isfile(join(INPUT_PATH, f))]
 for file_name in files:
     input_file = os.path.join(INPUT_PATH, file_name)
     res = process_image(input_file)
